@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    shm_size: 128mb
+
+  app:
+    build: .
+    container_name: app_api
+    restart: always
+    ports:
+      - "3333:3333"
+    volumes:
+      - ./src:/app/src
+    environment:
+      DB_HOST: db
+      DB_USER: myuser
+      DB_PASSWORD: mysecretpassword
+      DB_NAME: mydatabase
+      DB_PORT: "5432"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
